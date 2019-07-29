@@ -8,13 +8,14 @@
     },
     "background": {
         "scripts": [
-            "load.js"
+            "main.js"
         ],
         "persistent": false
     },
     "permissions": [
         "contextMenus",
         "activeTab",
-        "storage"
+        "storage",
+        "alarms"
     ]
 }

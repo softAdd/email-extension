@@ -15,7 +15,7 @@ window.onload = function () {
                 addItem(list, str, index + 1);
             });
         }
-    })
+    });
 
     button.addEventListener('click', function () {
         const text = input.value;
@@ -24,6 +24,16 @@ window.onload = function () {
         lines = [...lines, text];
         addItem(list, lines[lines.length - 1], lines.length);
         storage.set({ 'lines': lines });
+        chrome.contextMenus.create({
+            id: (lines.length - 1).toString(),
+            title: lines[lines.length - 1].toString(),
+            contexts: ['all'],
+            parentId: 'MAIN_ITEM',
+        });
+        storage.get(['set_changes_to_extension'], function(result) {
+            let state = result['set_changes_to_extension'];
+            storage.set({ 'set_changes_to_extension': !state })
+        })
     });
 
     input.addEventListener('keypress', function (event) {
@@ -31,8 +41,8 @@ window.onload = function () {
             button.dispatchEvent(new Event('click'));
         }
     });
-}
 
-function addItem(elem, text, index) {
-    elem.innerHTML += `<br/>${index}. ${text}`;
+    function addItem(elem, text, index) {
+        elem.innerHTML += `<br/>${index}. ${text}`;
+    }
 }
