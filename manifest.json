@@ -1,0 +1,20 @@
+{
+    "name": "Text Inserter",
+    "version": "1",
+    "manifest_version": 2,
+    "browser_action": {
+        "default_title": "Text Inserter",
+        "default_popup": "src/popup.html"
+    },
+    "background": {
+        "scripts": [
+            "load.js"
+        ],
+        "persistent": false
+    },
+    "permissions": [
+        "contextMenus",
+        "activeTab",
+        "storage"
+    ]
+}
