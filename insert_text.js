@@ -5,10 +5,12 @@
             text = result['current_text'];
         }
 
-        if (window.document.activeElement.value === undefined) {
-            window.document.activeElement.innerHTML += text;
+        let elem = window.document.activeElement;
+        
+        if (elem.value === undefined) {
+            elem.innerHTML += text;
         } else {
-            window.document.activeElement.value += text;
+            elem.value += text;
         }
     });
 })();
