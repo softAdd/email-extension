@@ -13,24 +13,8 @@ let text = '';
 let lines = [];
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-    // if(info.menuItemId == "MAIN_ITEM") {
-    //     chrome.tabs.executeScript(tab.id, { file: './insert_text.js' });
-    // }
-
-    // if (lines[info.menuItemId]) {
-    //     let text = lines[info.menuItemId];
-    //     insert_text(text, tab)
-    // }
-
-    chrome.runtime.getBackgroundPage(function (window) {
-        alert(window)
-        let elem = window.document.activeElement;
-        if (elem.value) {
-            elem.value += '123';
-        } else {
-            elem.innerHTML += '123';
-        }
-    })
+    storage.set({ 'current_text': lines[info.menuItemId].toString() })
+    chrome.tabs.executeScript(tab.id, { file: './insert_text.js' });
 });
 
 chrome.storage.onChanged.addListener(function () {
@@ -40,13 +24,3 @@ chrome.storage.onChanged.addListener(function () {
         }
     });
 });
-
-// function insert_text(text, tab) {
-//     chrome.tabs.executeScript(tab.id, { code: `let elem = window.document.activeElement; if (elem.value) { elem.value += 123; } else { elem.innerHTML += 456; }` })
-// }
-// let elem = window.document.activeElement;
-// if (elem.value) {
-//     elem.value += '123';
-// } else {
-//     elem.innerHTML += '123';
-// }

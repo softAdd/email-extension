@@ -1,8 +1,14 @@
 (function () {
-    let elem = window.document.activeElement;
-    let content = elem.value;
+    let text = '';
+    chrome.storage.sync.get(['current_text'], function (result) {
+        if (result['current_text']) {
+            text = result['current_text'];
+        }
 
-    if (!elem.value) {
-        content = elem.innerHTML;
-    }
+        if (window.document.activeElement.value === undefined) {
+            window.document.activeElement.innerHTML += text;
+        } else {
+            window.document.activeElement.value += text;
+        }
+    });
 })();
