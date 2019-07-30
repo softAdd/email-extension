@@ -43,6 +43,6 @@ window.onload = function () {
     });
 
     function addItem(elem, text, index) {
-        elem.innerHTML += `<br/>${index}. ${text}`;
+        elem.innerHTML += `<div  class="text-item item-${index}"><p>${index}. ${text} ${lines.toString()}</p><img src="/images/close.svg" class="close-button-img" alt="close button"/></div>`;
     }
 }

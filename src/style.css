@@ -63,3 +63,17 @@ button {
     border: solid 1px #b3aca7;
     border-top: none;
 }
+
+.close-button-img {
+    height: 1em;
+    width: 1em;
+    margin: auto;
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    z-index: 5;
+}
+
+.text-item {
+    position: relative;
+}
