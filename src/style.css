@@ -1,79 +1,43 @@
-html {
-    width: 300px;
-    height: 300px;
-}
-
-body {
+* {
+    box-sizing: border-box;
+    padding: 0;
     margin: 0;
-    padding: 0;
 }
-
-.add-input {
-    width: 300px;
-}
-
-.add-button {
-    width: 300px;
-    height: 50px
-}
-
-.text-list {
-    width: 300px;
-    margin-left: 10px;
-}
-
-@import url(https://fonts.googleapis.com/css?family=Lato:100,300,400);
 
 body {
-    font-family: 'Lato', sans-serif;
-    background: #e2dedb;
-    color: #b3aca7;
-    font-size: 1em;
+    margin: 0; padding: 10px;
+    min-width: 400px;
 }
 
-body::-webkit-scrollbar {
-    display: none;
+.head {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-bottom: 10px;
 }
 
-input {
-    font-family: 'Lato', sans-serif;
-    font-size: 1em;
-    width: 470px;
-    height: 50px;
-    padding: 0px 15px 0px 15px;
-    background: transparent;
-    outline: none;
-    color: #726659;
-    border: solid 1px #b3aca7;
-    border-bottom: none;
-    transition: all 0.3s ease-in-out;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
+#select-domain {
+    min-width: 150px;
+    max-height: 1.7em;
+    margin-left: 14px;
 }
 
-button {
-    padding: 0;
-    font-family: 'Lato', sans-serif;
-    font-size: 1.5em;
-    background-color: #201c29;
-    color: #aca49c;
-    outline: none;
-    cursor: pointer;
-    border: solid 1px #b3aca7;
-    border-top: none;
+.center-input-group {
+    padding: 10px 0;
 }
 
-.close-button-img {
-    height: 1em;
-    width: 1em;
-    margin: auto;
-    cursor: pointer;
-    position: absolute;
-    right: 15px;
-    z-index: 5;
+.domain-type-label {
+    display: block;
+    white-space: nowrap;
+    padding-top: 2px;
 }
 
-.text-item {
-    position: relative;
+.domain-type-label > * {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.domain-type-label input {
+    margin-right: 5px;
 }

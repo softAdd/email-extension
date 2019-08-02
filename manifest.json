@@ -3,19 +3,34 @@
     "version": "1",
     "manifest_version": 2,
     "browser_action": {
-        "default_title": "Text Inserter",
-        "default_popup": "src/popup.html"
+        "default_title": "Email extension",
+        "default_popup": "src/index.html"
     },
     "background": {
         "scripts": [
-            "main.js"
+            "background.js"
         ],
         "persistent": false
     },
     "permissions": [
         "contextMenus",
         "activeTab",
+        "tabs",
         "storage",
-        "alarms"
+        "alarms",
+        "<all_urls>",
+        "http://*/*",
+        "https://*/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "run_at": "document_idle",
+            "js": [
+                "active.js"
+            ]
+        }
     ]
 }
