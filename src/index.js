@@ -20,8 +20,9 @@ window.onload = async function () {
     const select = document.querySelector('#select-domain');
     let emails = await recieveData('allEmailDomains');
     if (emails === undefined || emails === '' || emails === []) {
-        emails = ['@example.com', '@example.ru'];
+        emails = ['@gmail.com', '@mail.ru'];
         await storeData({ 'allEmailDomains': emails });
+        updatePageData();
     }
     emails.forEach(email => {
         select.innerHTML += `<option value="${email}">${email}</option>`;

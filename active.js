@@ -6,13 +6,15 @@
     if (currentDomain === undefined) {
         currentDomain = '@example.com';
     }
+    await storeData({ 'currentText': currentUrl + currentDomain });
 
     chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
         if (request.updateData) {
             currentUrl = await getCurrentUrl(url);
             currentDomain = await getCurrentDomain();
+            await storeData({ 'currentText': currentUrl + currentDomain });
         }
-    })
+    });
 })();
 
 function parseDomain(url) {

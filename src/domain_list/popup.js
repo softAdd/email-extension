@@ -19,6 +19,12 @@ window.onload = async function() {
         await storeData({ 'allEmailDomains': emails });
         updatePageData();
     })
+
+    emailInput.addEventListener('keypress', function(e) {
+        if (e.keyCode === 13) {
+            addEmailButton.dispatchEvent(new Event('click'));
+        }
+    })
 }
 
 function storeData(dataSet = {}, callback = () => { }) {
