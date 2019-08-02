@@ -1,6 +1,18 @@
 body {
     width: 400px;
-    height: 400px;
+    max-height: 400px;
     display: flex;
     flex-direction: column;
+}
+
+.back {
+    height: 50px;
+}
+
+.domain-list {
+    overflow-y: scroll;
+}
+
+.domain-list::-webkit-scrollbar {
+    display: none;
 }
