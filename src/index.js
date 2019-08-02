@@ -1,6 +1,5 @@
 window.onload = async function () {
     const inputs = document.querySelectorAll('input[name=input-center]');
-
     let checkedInput = await recieveData('selectedUrlType');
     if (checkedInput === undefined) {
         inputs[0].checked = true;
@@ -19,18 +18,14 @@ window.onload = async function () {
     });
 
     const select = document.querySelector('#select-domain');
-    // storage.get(['selected_option_number'], function (result) {
-    //     const selectedOption = result['selected_option_number'];
-
-    //     if (typeof selectedOption === 'string') {
-    //         select.selectedIndex = parseInt(selectedOption, 10);
-    //     } else {
-    //         select.selectedIndex = 0;
-    //         storage.set({
-    //             'selected_option_number': '0'
-    //         })
-    //     }
-    // })
+    let emails = await recieveData('allEmailDomains');
+    if (emails === undefined || emails === '' || emails === []) {
+        emails = ['@example.com', '@example.ru'];
+        await storeData({ 'allEmailDomains': emails });
+    }
+    emails.forEach(email => {
+        select.innerHTML += `<option value="${email}">${email}</option>`;
+    })
 
     const selectIndex = await recieveData('selectedOptionNumber');
     if (selectIndex === undefined) {
@@ -40,14 +35,20 @@ window.onload = async function () {
         select.selectedIndex = parseInt(selectIndex, 10);
     }
 
-    const selectValue = await recieveData('selectValue');
+    const selectValue = await recieveData('currentDomain');
     if (selectValue === undefined || selectValue === '') {
-        select.value = '';
+        await storeData({ 'currentDomain': select.value.toString() });
     }
 
     select.addEventListener('change', async function() {
         await storeData({ 'selectedOptionNumber': select.selectedIndex.toString() });
-        await storeData({ 'selectValue': select.value.toString() });
+        await storeData({ 'currentDomain': select.value.toString() });
+        updatePageData();
+    })
+
+    const optionsNode = document.querySelector('#options-button');
+    optionsNode.addEventListener('click', function() {
+        window.location.href = "domain_list/popup.html";
     })
 }
 
