@@ -16,3 +16,28 @@ body {
 .domain-list::-webkit-scrollbar {
     display: none;
 }
+
+.email-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+    height: 30px;
+}
+
+.delete-item {
+    cursor: pointer;
+    margin: auto 20px auto 0;
+    border: 1px solid black;
+    width: 30px;
+    text-align: center;
+    color: white;
+    background-color: black;
+    border-radius: 10px;
+}
+
+.delete-item:hover {
+    background-color: #946a6a;
+    border: 1px solid white;
+}

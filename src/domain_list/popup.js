@@ -8,16 +8,21 @@ window.onload = async function() {
     })
     let emails = await recieveData('allEmailDomains');
 
-    emails.forEach(email => {
-        domainList.innerHTML += `<p class="email-item">${email}</p>`;
+    emails.forEach((email, index) => {
+        domainList.innerHTML += `<div class="email-item"><p class="email">${email}</p><span class="delete-item" id="delete-${index}">x</span></div>`;
     });
+    updateDeleteNodes();
     
     addEmailButton.addEventListener('click', async function() {
         emails = [...emails, '@' + emailInput.value.toString()];
-        domainList.innerHTML += `<p class="email-item">@${emailInput.value.toString()}</p>`;
+        domainList.innerHTML = '';
+        emails.forEach((email, index) => {
+            domainList.innerHTML += `<div class="email-item"><p class="email">${email}</p><span class="delete-item" id="delete-${index}">x</span></div>`;
+        });
         emailInput.value = '';
         await storeData({ 'allEmailDomains': emails });
         updatePageData();
+        updateDeleteNodes();
     })
 
     emailInput.addEventListener('keypress', function(e) {
@@ -48,5 +53,17 @@ function updatePageData() {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         let tab = tabs[0];
         chrome.tabs.sendMessage(tab.id, { updateData: true });
+    });
+}
+
+
+function updateDeleteNodes() {
+    const deleteNodes = document.querySelectorAll('.delete-item');
+    deleteNodes.forEach(node => {
+        node.addEventListener('click', function() {
+            alert(node.id)
+            // emails.splice(1, 1);
+            // updatePageData()
+        })
     });
 }
