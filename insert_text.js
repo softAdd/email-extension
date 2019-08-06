@@ -8,9 +8,9 @@
     }
     let elem = window.document.activeElement;
         if (elem.value === undefined) {
-            elem.innerHTML += currentText;
+            elem.innerHTML = currentText;
         } else {
-            elem.value += currentText;
+            elem.value = currentText;
         }
 })();
 
