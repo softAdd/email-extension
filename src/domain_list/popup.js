@@ -20,6 +20,7 @@ window.onload = async function() {
             await storeData({ 'currentDomain': emails[0].toString() }, updatePageData);
         }
         createDeleteListeners(emails);
+        emailInput.focus();
         updatePageData();
     })
 
@@ -38,15 +39,15 @@ function storeData(dataSet = {}, callback = () => { }) {
             callback();
             resolve();
         });
-    })
+    });
 }
 
 function recieveData(propName = '') {
     return new Promise(resolve => {
         chrome.storage.sync.get([propName], function (result) {
             resolve(result[propName]);
-        })
-    })
+        });
+    });
 }
 
 function updatePageData() {
@@ -71,9 +72,12 @@ function createDeleteListeners(emails) {
             await storeData({ 'allEmailDomains': emails });
             domainList.innerHTML = '';
             if (emails.length === 0) {
-                await storeData({ 'currentDomain': '@example.com' }, updatePageData)
+                await storeData({ 'currentDomain': '@example.com' }, updatePageData);
             } else {
                 addEmails(domainList, emails);
+            }
+            if (emails.length === 1) {
+                await storeData({ 'currentDomain': emails[0].toString() }, updatePageData);
             }
             createDeleteListeners(emails);
         });

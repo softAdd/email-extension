@@ -32,13 +32,13 @@ function storeData(dataSet = {}, callback = () => {}) {
             callback();
             resolve();
         });
-    })
+    });
 }
 
 function recieveData(propName = '') {
     return new Promise(resolve => {
         chrome.storage.sync.get([propName], function(result) {
             resolve(result[propName]);
-        })
-    })
+        });
+    });
 }
