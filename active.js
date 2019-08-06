@@ -13,7 +13,6 @@
             currentUrl = await getCurrentUrl(url);
             currentDomain = await getCurrentDomain();
             await storeData({ 'currentText': currentUrl + currentDomain });
-            console.log('updated')
         }
     });
 })();
