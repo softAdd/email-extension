@@ -9,7 +9,7 @@ body {
     min-width: 400px;
 }
 
-.head {
+.head-item {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -17,7 +17,19 @@ body {
     padding-bottom: 10px;
 }
 
+.select-label {
+    width: 40px;
+}
+
 #select-domain {
+    width: 170px;
+    min-width: 150px;
+    max-height: 1.7em;
+    margin-left: 14px;
+}
+
+#select-prefix {
+    width: 170px;
     min-width: 150px;
     max-height: 1.7em;
     margin-left: 14px;
