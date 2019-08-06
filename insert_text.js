@@ -1,4 +1,4 @@
-(async function() {
+(async function () {
     let currentText = await recieveData('currentText');
     let userPrefix = await recieveData('prefix');
     let currentDomain = await recieveData('currentDomain');
@@ -7,11 +7,21 @@
         currentText = `${userPrefix}+${currentUrl}${currentDomain}`;
     }
     let elem = window.document.activeElement;
+    if (await recieveData('settings')[2] === true) {
+        if (elem.value === undefined) {
+            elem.innerHTML = currentText;
+        } else {
+            elem.value = currentText;
+        }
+    } else {
         if (elem.value === undefined) {
             elem.innerHTML += currentText;
         } else {
             elem.value += currentText;
         }
+    }
+    console.log(await recieveData('settings'))
+    console.log(await recieveData('settings')[3])
 })();
 
 function recieveData(propName = '') {
