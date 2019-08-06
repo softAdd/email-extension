@@ -6,20 +6,20 @@ window.onload = async function() {
     backButton.addEventListener('click', function() {
         window.location.href = "../index.html";
     })
-    let emails = await recieveData('allEmailDomains');
 
-    emails.forEach((email, index) => {
-        domainList.innerHTML += `<div class="email-item"><p class="email">${email}</p><span class="delete-item" id="delete-${index}">x</span></div>`;
-    });
-    
+    let emails = await recieveData('allEmailDomains');
+    addEmails(domainList, emails);
+
     addEmailButton.addEventListener('click', async function() {
         emails = [...emails, '@' + emailInput.value.toString()];
         domainList.innerHTML = '';
-        emails.forEach((email, index) => {
-            domainList.innerHTML += `<div class="email-item"><p class="email">${email}</p><span class="delete-item" id="delete-${index}">x</span></div>`;
-        });
+        addEmails(domainList, emails);
         emailInput.value = '';
         await storeData({ 'allEmailDomains': emails });
+        if (emails.length === 1) {
+            await storeData({ 'currentDomain': emails[0].toString() }, updatePageData);
+        }
+        createDeleteListeners(emails);
         updatePageData();
     })
 
@@ -28,6 +28,8 @@ window.onload = async function() {
             addEmailButton.dispatchEvent(new Event('click'));
         }
     })
+    createDeleteListeners(emails);
+    updatePageData();
 }
 
 function storeData(dataSet = {}, callback = () => { }) {
@@ -51,5 +53,29 @@ function updatePageData() {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         let tab = tabs[0];
         chrome.tabs.sendMessage(tab.id, { updateData: true });
+    });
+}
+
+function addEmails(domainList, emails) {
+    emails.forEach((email, index) => {
+        domainList.innerHTML += `<div class="email-item"><p class="email">${email}</p><span class="delete-item" id="delete-${index}">x</span></div>`;
+    });
+}
+
+function createDeleteListeners(emails) {
+    const deleteButtons = document.querySelectorAll('.delete-item');
+    const domainList = document.querySelector('.domain-list');
+    deleteButtons.forEach((button, index) => {
+        button.addEventListener('click', async function() {
+            emails.splice(index, 1);
+            await storeData({ 'allEmailDomains': emails });
+            domainList.innerHTML = '';
+            if (emails.length === 0) {
+                await storeData({ 'currentDomain': '@example.com' }, updatePageData)
+            } else {
+                addEmails(domainList, emails);
+            }
+            createDeleteListeners(emails);
+        });
     });
 }

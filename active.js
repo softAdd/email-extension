@@ -3,7 +3,7 @@
 
     let currentUrl = await getCurrentUrl(url);
     let currentDomain = await getCurrentDomain();
-    if (currentDomain === undefined) {
+    if (currentDomain === undefined || currentDomain === '') {
         currentDomain = '@example.com';
     }
     await storeData({ 'currentText': currentUrl + currentDomain });
@@ -13,6 +13,7 @@
             currentUrl = await getCurrentUrl(url);
             currentDomain = await getCurrentDomain();
             await storeData({ 'currentText': currentUrl + currentDomain });
+            console.log('updated')
         }
     });
 })();

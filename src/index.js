@@ -51,6 +51,7 @@ window.onload = async function () {
     optionsNode.addEventListener('click', function() {
         window.location.href = "domain_list/popup.html";
     })
+    updatePageData();
 }
 
 function storeData(dataSet = {}, callback = () => { }) {
