@@ -16,22 +16,25 @@ async function createSubmenu() {
         setting.addEventListener('change', async function() {
             checked[index] = setting.checked;
             await storeData({ 'settings': checked });
+            if (index === 0 || index === 1) {
+                messageToUpdateMenus();
+            }
         });
     });
 }
-// const settings = document.querySelectorAll('.menu-settings');
-// const settingState = [];
-// settings.forEach(setting => {
-//     setting.addEventListener('change', function() {
-//         //
-//     })
-// })
-// // chrome.contextMenus.create({
-// //     id: 'asdas',
-// //     title: 'asdsa',
-// //     contexts: ['all'],
-// //     parentId: 'MAIN_ITEM'
-// // });
+// chrome.contextMenus.create({
+//     id: 'asdas',
+//     title: 'asdsa',
+//     contexts: ['all'],
+//     parentId: 'MAIN_ITEM'
+// });
+
+function messageToUpdateMenus() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        let tab = tabs[0];
+        chrome.tabs.sendMessage(tab.id, { createMenus: true });
+    });
+}
 
 function storeData(dataSet = {}, callback = () => {}) {
     return new Promise(resolve => {

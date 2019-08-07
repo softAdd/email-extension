@@ -15,7 +15,19 @@
             await storeData({ 'currentText': currentUrl + currentDomain });
         }
     });
+
+    chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
+        if (request.createMenus) {
+            await showVariations();
+        }
+    });
 })();
+
+async function showVariations() {
+    // const settings = await recieveData('settings');
+    alert('changes')
+    await chrome.contextMenus.removeAll();
+}
 
 function parseDomain(url) {
     let topLevelDomain = extractHostname(url, true);

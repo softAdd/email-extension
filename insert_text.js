@@ -8,17 +8,16 @@
         currentText = `${userPrefix}+${currentUrl}${currentDomain}`;
     }
     const elem = window.document.activeElement;
+    if (elem.value === undefined) {
+        elem.innerHTML += currentText;
+    } else {
+        elem.value += currentText;
+    }
     if (settings[2]) {
         if (elem.value === undefined) {
             elem.innerHTML = currentText;
         } else {
             elem.value = currentText;
-        }
-    } else {
-        if (elem.value === undefined) {
-            elem.innerHTML += currentText;
-        } else {
-            elem.value += currentText;
         }
     }
 })();
