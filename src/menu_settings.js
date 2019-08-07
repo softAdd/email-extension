@@ -14,19 +14,10 @@ async function createSubmenu() {
 
     settings.forEach((setting, index) => {
         setting.addEventListener('change', async function() {
-            // checked[index] = setting.checked;
-            console.log(checked[index])
-            // await storeData({ 'settings': checked });
+            checked[index] = setting.checked;
+            await storeData({ 'settings': checked });
         });
     });
-
-    // settings.forEach((setting, index) => {
-    //     setting[index] = checked[index];
-    //     setting.addEventListener('change', async function() {
-    //         checked[index] = setting.checked;
-    //         await storeData({ 'settings': checked });
-    //     })
-    // })
 }
 // const settings = document.querySelectorAll('.menu-settings');
 // const settingState = [];

@@ -3,16 +3,24 @@
     let userPrefix = await recieveData('prefix');
     let currentDomain = await recieveData('currentDomain');
     let currentUrl = currentText.split('@')[0];
+    const settings = await recieveData('settings');
     if (userPrefix !== undefined && userPrefix !== '') {
         currentText = `${userPrefix}+${currentUrl}${currentDomain}`;
     }
-    let elem = window.document.activeElement;
-    if (elem.value === undefined) {
-        elem.innerHTML += currentText;
+    const elem = window.document.activeElement;
+    if (settings[2]) {
+        if (elem.value === undefined) {
+            elem.innerHTML = currentText;
+        } else {
+            elem.value = currentText;
+        }
     } else {
-        elem.value += currentText;
+        if (elem.value === undefined) {
+            elem.innerHTML += currentText;
+        } else {
+            elem.value += currentText;
+        }
     }
-    console.log(await recieveData('settings'))
 })();
 
 function recieveData(propName = '') {
