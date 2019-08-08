@@ -22,6 +22,7 @@ window.onload = async function() {
         createDeleteListeners(emails);
         emailInput.focus();
         updatePageData();
+        messageToUpdateMenus();
     })
 
     emailInput.addEventListener('keypress', function(e) {
@@ -57,6 +58,13 @@ function updatePageData() {
     });
 }
 
+function messageToUpdateMenus() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        let tab = tabs[0];
+        chrome.tabs.sendMessage(tab.id, { createMenus: true });
+    });
+}
+
 function addEmails(domainList, emails) {
     emails.forEach((email, index) => {
         domainList.innerHTML += `<div class="email-item"><p class="email">${email}</p><span class="delete-item" id="delete-${index}">x</span></div>`;
@@ -79,6 +87,7 @@ function createDeleteListeners(emails) {
             if (emails.length === 1) {
                 await storeData({ 'currentDomain': emails[0].toString() }, updatePageData);
             }
+            messageToUpdateMenus();
             createDeleteListeners(emails);
         });
     });

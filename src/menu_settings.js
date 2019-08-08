@@ -22,12 +22,6 @@ async function createSubmenu() {
         });
     });
 }
-// chrome.contextMenus.create({
-//     id: 'asdas',
-//     title: 'asdsa',
-//     contexts: ['all'],
-//     parentId: 'MAIN_ITEM'
-// });
 
 function messageToUpdateMenus() {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {

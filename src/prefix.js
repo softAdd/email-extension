@@ -10,6 +10,7 @@ async function listenPrefix() {
 
     selectPrefix.addEventListener('keyup', async function() {
         await storeData({ 'prefix': selectPrefix.value.toString() });
+        messageToUpdateMenus();
     });
 }
 
@@ -27,5 +28,12 @@ function recieveData(propName = '') {
         chrome.storage.sync.get([propName], function(result) {
             resolve(result[propName]);
         });
+    });
+}
+
+function messageToUpdateMenus() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        let tab = tabs[0];
+        chrome.tabs.sendMessage(tab.id, { createMenus: true });
     });
 }

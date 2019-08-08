@@ -38,24 +38,37 @@ async function showVariations() {
     const currentDomain = await recieveData('currentDomain');
     const allDomains = await recieveData('allEmailDomains');
     const urlVariants = await recieveData('urlVariants');
+    const prefix = await recieveData('prefix');
 
     if (settings[0]) {
         urlVariants.forEach((url, index) => {
+            let title = '';
+            if (prefix !== undefined) {
+                title = `${prefix}+${url}${currentDomain}`;
+            } else {
+                title = url + currentDomain;
+            }
             contextMenus.push({
                 id: `url-${index}`,
-                title: `${url}${currentDomain}`,
+                title: title,
                 contexts: ['all']
             });
         });
     }
 
     if (settings[1]) {
-        let currentText = await recieveData('currentText');
-        let url = currentText.split('@')[0];
+        const currentText = await recieveData('currentText');
+        const url = currentText.split('@')[0];
         allDomains.forEach((domain, index) => {
+            let title = '';
+            if (prefix !== undefined) {
+                title = `${prefix}+${url}${domain}`;
+            } else {
+                title = `${url}${domain}`;
+            }
             contextMenus.push({
                 id: `domain-${index}`,
-                title: `${url}${domain}`,
+                title: title,
                 contexts: ['all']
             })
         })

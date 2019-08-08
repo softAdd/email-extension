@@ -13,6 +13,7 @@ window.onload = async function () {
             if (input.checked) {
                 await storeData({ 'selectedUrlType': index.toString() });
                 updatePageData();
+                messageToUpdateMenus();
             }
         });
     });
@@ -45,6 +46,7 @@ window.onload = async function () {
         await storeData({ 'selectedOptionNumber': select.selectedIndex.toString() });
         await storeData({ 'currentDomain': select.value.toString() });
         updatePageData();
+        messageToUpdateMenus();
     })
 
     const optionsNode = document.querySelector('#options-button');
@@ -75,5 +77,12 @@ function updatePageData() {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         let tab = tabs[0];
         chrome.tabs.sendMessage(tab.id, { updateData: true });
+    });
+}
+
+function messageToUpdateMenus() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        let tab = tabs[0];
+        chrome.tabs.sendMessage(tab.id, { createMenus: true });
     });
 }
