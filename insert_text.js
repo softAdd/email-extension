@@ -2,7 +2,7 @@
     let currentText = await recieveData('currentText');
     let userPrefix = await recieveData('prefix');
     let currentDomain = await recieveData('currentDomain');
-    let currentUrl = currentText.split('@')[0];
+    // let currentUrl = currentText.split('@')[0];
     if (userPrefix !== undefined && userPrefix !== '') {
         currentText = `${userPrefix}+${currentUrl}${currentDomain}`;
         await storeData({ 'currentText': currentText });

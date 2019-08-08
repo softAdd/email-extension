@@ -43,7 +43,7 @@ async function showVariations() {
     if (settings[0]) {
         urlVariants.forEach((url, index) => {
             let title = '';
-            if (prefix !== undefined) {
+            if (prefix !== undefined && prefix !== '') {
                 title = `${prefix}+${url}${currentDomain}`;
             } else {
                 title = url + currentDomain;
@@ -61,7 +61,7 @@ async function showVariations() {
         const url = currentText.split('@')[0];
         allDomains.forEach((domain, index) => {
             let title = '';
-            if (prefix !== undefined) {
+            if (prefix !== undefined && prefix !== '') {
                 title = `${prefix}+${url}${domain}`;
             } else {
                 title = `${url}${domain}`;

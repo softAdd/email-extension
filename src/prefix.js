@@ -9,8 +9,7 @@ async function listenPrefix() {
     }
 
     selectPrefix.addEventListener('keyup', async function() {
-        await storeData({ 'prefix': selectPrefix.value.toString() });
-        messageToUpdateMenus();
+        await storeData({ 'prefix': selectPrefix.value.toString() }, messageToUpdateMenus);
     });
 }
 
