@@ -22,6 +22,7 @@
             chrome.runtime.sendMessage({createMenus: true})
         }
     });
+    chrome.runtime.sendMessage({createMenus: true});
 })();
 
 function parseDomain(url) {

@@ -1,6 +1,8 @@
 window.onload = async function () {
-    await showVariations();
+    await setDefaults();
+}
 
+async function setDefaults() {
     chrome.tabs.onActivated.addListener(function () {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
             let tab = tabsArray[0];
@@ -10,15 +12,8 @@ window.onload = async function () {
 
     chrome.runtime.onMessage.addListener(async function (request) {
         if (request.createMenus) {
-            await showVariations();
+            await updateAllMenus();
         }
-    })
-}
-
-function insertText() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
-        let tab = tabsArray[0];
-        chrome.tabs.executeScript(tab.id, { file: './insert_text.js' });
     });
 }
 
@@ -26,95 +21,73 @@ async function removeAllMenus() {
     await chrome.contextMenus.removeAll();
 }
 
-async function showVariations() {
-    const settings = await recieveData('settings');
-    if (settings === undefined || (!settings[0] && !settings[1])) {
-        chrome.contextMenus.onClicked.removeListener(callInsert);
-        await createMainMenu();
-        return
-    }
-
+async function updateAllMenus() {
     await removeAllMenus();
-    let contextMenus = [];
-    const currentDomain = await recieveData('currentDomain');
-    const allDomains = await recieveData('allEmailDomains');
-    const urlVariants = await recieveData('urlVariants');
-    const prefix = await recieveData('prefix');
+    const currentText = await recieveData('currentText');
 
-    if (settings[0]) {
-        urlVariants.forEach((url, index) => {
-            let title = '';
-            if (prefix !== undefined && prefix !== '') {
-                title = `${prefix}+${url}${currentDomain}`;
-            } else {
-                title = url + currentDomain;
-            }
-            contextMenus.push({
-                id: `url-${index}`,
-                title: title,
-                contexts: ['all']
-            });
-            chrome.contextMenus.onClicked.addListener(async function (info) {
-                if (info.menuItemId === `url-${index}`) {
-                    await storeData({ 'textFromContext': title });
-                    chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
-                        let tab = tabsArray[0];
-                        chrome.tabs.executeScript(tab.id, { file: './context_menus.js' });
-                    });
-                }
-            });
-        });
+    const mainContext = {
+        id: 'MAIN_ITEM',
+        title: currentText || 'username@domain.ru',
+        contexts: ['all']
     }
-
-    if (settings[1]) {
-        const currentText = await recieveData('currentText');
-        const url = currentText.split('@')[0];
-        allDomains.forEach((domain, index) => {
-            let title = '';
-            if (prefix !== undefined && prefix !== '') {
-                title = `${prefix}+${url}${domain}`;
-            } else {
-                title = `${url}${domain}`;
-            }
-            contextMenus.push({
-                id: `domain-${index}`,
-                title: title,
-                contexts: ['all']
-            });
-            chrome.contextMenus.onClicked.addListener(async function (info) {
-                if (info.menuItemId === `domain-${index}`) {
-                    await storeData({ 'textFromContext': title });
-                    chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
-                        let tab = tabsArray[0];
-                        chrome.tabs.executeScript(tab.id, { file: './context_menus.js' });
-                    });
-                }
-            });
-        })
-    }
-
-    contextMenus.forEach(menu => {
-        chrome.contextMenus.create(menu);
-    })
+    chrome.contextMenus.create(mainContext);
+    chrome.contextMenus.onClicked.removeListener(callInsert);
+    chrome.contextMenus.onClicked.addListener(callInsert);
 }
 
 function callInsert(info) {
     if (info.menuItemId === 'MAIN_ITEM') {
-        insertText();
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
+            let tab = tabsArray[0];
+            chrome.tabs.executeScript(tab.id, { file: './insert_text.js' });
+        });
     }
 }
 
-async function createMainMenu() {
-    await removeAllMenus();
-    const mainMenu = {
-        id: 'MAIN_ITEM',
-        title: '@-insert',
-        contexts: ['all']
-    }
-    chrome.contextMenus.create(mainMenu);
-    
-    chrome.contextMenus.onClicked.addListener(callInsert);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function storeData(dataSet = {}, callback = () => { }) {
     return new Promise(resolve => {

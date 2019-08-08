@@ -54,6 +54,7 @@ window.onload = async function () {
         window.location.href = "domain_list/popup.html";
     })
     updatePageData();
+    messageToUpdateMenus();
 }
 
 function storeData(dataSet = {}, callback = () => { }) {
