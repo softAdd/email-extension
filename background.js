@@ -29,6 +29,7 @@ async function removeAllMenus() {
 async function showVariations() {
     const settings = await recieveData('settings');
     if (settings === undefined || (!settings[0] && !settings[1])) {
+        chrome.contextMenus.onClicked.removeListener(callInsert);
         await createMainMenu();
         return
     }
@@ -97,6 +98,12 @@ async function showVariations() {
     })
 }
 
+function callInsert(info) {
+    if (info.menuItemId === 'MAIN_ITEM') {
+        insertText();
+    }
+}
+
 async function createMainMenu() {
     await removeAllMenus();
     const mainMenu = {
@@ -105,11 +112,8 @@ async function createMainMenu() {
         contexts: ['all']
     }
     chrome.contextMenus.create(mainMenu);
-    chrome.contextMenus.onClicked.addListener(function (info) {
-        if (info.menuItemId === 'MAIN_ITEM') {
-            insertText();
-        }
-    });
+    
+    chrome.contextMenus.onClicked.addListener(callInsert);
 }
 
 function storeData(dataSet = {}, callback = () => { }) {
