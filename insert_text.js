@@ -1,10 +1,10 @@
 (async function () {
     let currentText = await recieveData('currentText');
-    let userPrefix = await recieveData('prefix');
-    let currentDomain = await recieveData('currentDomain');
-    // let currentUrl = currentText.split('@')[0];
+    const userPrefix = await recieveData('prefix');
+    const currentDomain = await recieveData('currentDomain');
+    const url = await recieveData('currentUrl');
     if (userPrefix !== undefined && userPrefix !== '') {
-        currentText = `${userPrefix}+${currentUrl}${currentDomain}`;
+        currentText = `${userPrefix}+${url}${currentDomain}`;
         await storeData({ 'currentText': currentText });
     }
     await insertText(currentText);

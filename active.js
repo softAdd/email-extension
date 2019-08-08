@@ -2,6 +2,7 @@
     const url = window.location.href;
 
     let currentUrl = await getCurrentUrl(url);
+    await storeData({ 'currentUrl': currentUrl });
     let currentDomain = await getCurrentDomain();
     if (currentDomain === undefined || currentDomain === '') {
         currentDomain = '@example.com';
