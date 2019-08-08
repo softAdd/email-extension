@@ -53,6 +53,15 @@ async function showVariations() {
                 title: title,
                 contexts: ['all']
             });
+            chrome.contextMenus.onClicked.addListener(async function (info) {
+                if (info.menuItemId === `url-${index}`) {
+                    await storeData({ 'textFromContext': title });
+                    chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
+                        let tab = tabsArray[0];
+                        chrome.tabs.executeScript(tab.id, { file: './context_menus.js' });
+                    });
+                }
+            });
         });
     }
 
@@ -70,7 +79,16 @@ async function showVariations() {
                 id: `domain-${index}`,
                 title: title,
                 contexts: ['all']
-            })
+            });
+            chrome.contextMenus.onClicked.addListener(async function (info) {
+                if (info.menuItemId === `domain-${index}`) {
+                    await storeData({ 'textFromContext': title });
+                    chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
+                        let tab = tabsArray[0];
+                        chrome.tabs.executeScript(tab.id, { file: './context_menus.js' });
+                    });
+                }
+            });
         })
     }
 

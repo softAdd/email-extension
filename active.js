@@ -9,7 +9,7 @@
     }
     await storeData({ 'currentText': currentUrl + currentDomain });
 
-    chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
+    chrome.runtime.onMessage.addListener(async function(request) {
         if (request.updateData) {
             currentUrl = await getCurrentUrl(url);
             currentDomain = await getCurrentDomain();
@@ -17,7 +17,7 @@
         }
     });
 
-    chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
+    chrome.runtime.onMessage.addListener(async function(request) {
         if (request.createMenus) {
             chrome.runtime.sendMessage({createMenus: true})
         }
