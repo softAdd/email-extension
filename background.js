@@ -3,7 +3,7 @@ window.onload = async function () {
 }
 
 async function setDefaults() {
-    chrome.tabs.onActivated.addListener(function () {
+    chrome.tabs.onActivated.addListener(async function () {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
             let tab = tabsArray[0];
             chrome.tabs.executeScript(tab.id, { file: './active.js' });
@@ -33,6 +33,8 @@ async function updateAllMenus() {
     chrome.contextMenus.create(mainContext);
     chrome.contextMenus.onClicked.removeListener(callInsert);
     chrome.contextMenus.onClicked.addListener(callInsert);
+    chrome.contextMenus.update('MAIN_ITEM', { onclick: () => { alert('1') } })
+    await createContextMenus();
 }
 
 function callInsert(info) {
@@ -44,10 +46,79 @@ function callInsert(info) {
     }
 }
 
+async function createContextMenus() {
+    const settings = await recieveData('settings');
+    if (settings === undefined || (!settings[0] && !settings[1])) {
+        return
+    }
+    chrome.contextMenus.create({
+        id: 'VARIANTS',
+        title: 'Show variants',
+        contexts: ['all']
+    })
+    const currentDomain = await recieveData('currentDomain');
+    const urlVariants = await recieveData('urlVariants');
+    const prefix = await recieveData('prefix');
+    let titles = [];
 
+    if (settings[0]) {
+        urlVariants.forEach((url, index) => {
+            let title = '';
+            if (prefix !== undefined && prefix !== '') {
+                title = `${prefix}+${url}${currentDomain}`;
+            } else {
+                title = url + currentDomain;
+            }
+            chrome.contextMenus.create({
+                id: `url-${index}`,
+                title: title,
+                contexts: ['all'],
+                parentId: 'VARIANTS',
+                "onclick": function(info, tab) {alert(1);},
+            })
+            // titles.push(title)
+        });
+    }
+    const allEmailDomains = await recieveData('allEmailDomains');
 
+    if (settings[1]) {
+        //
+    }
 
+    // titles.forEach(title => {
+    //     async function insertMenuTitle() {
+    //         await storeData({ 'currentText': title });
+    //         chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
+    //             let tab = tabsArray[0];
+    //             chrome.tabs.executeScript(tab.id, { file: './insert_text.js' });
+    //         });
+    //     }
 
+    //     chrome.contextMenus.onClicked.removeListener(insertMenuTitle);
+    //     chrome.contextMenus.onClicked.addListener(insertMenuTitle);
+    // });
+    // chrome.contextMenus.onClicked.addListener(await insertSubtitle(titles));
+}
+
+async function insertSubtitle(titles) {
+    return async function (info) {
+        const id = parseInt(info.menuItemId.split('-')[1], 10);
+        await storeData({ 'currentText': titles[id] });
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
+            let tab = tabsArray[0];
+            chrome.tabs.executeScript(tab.id, { file: './insert_text.js' });
+        });
+    }
+}
+
+// let currentText = await recieveData('currentText');
+// const prefix = await recieveData('prefix');
+// const currentDomain = await recieveData('currentDomain');
+// const currentUrl = await recieveData('currentUrl');
+// if (userPrefix !== undefined && prefix !== '') {
+//     currentText = `${prefix}+${currentUrl}${currentDomain}`;
+//     await storeData({ 'currentText': currentText });
+// }
 
 
 
