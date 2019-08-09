@@ -31,9 +31,7 @@ async function updateAllMenus() {
         contexts: ['all']
     }
     chrome.contextMenus.create(mainContext);
-    chrome.contextMenus.onClicked.removeListener(callInsert);
-    chrome.contextMenus.onClicked.addListener(callInsert);
-    chrome.contextMenus.update('MAIN_ITEM', { onclick: () => { alert('1') } })
+    chrome.contextMenus.update('MAIN_ITEM', { onclick: callInsert });
     await createContextMenus();
 }
 
@@ -59,7 +57,6 @@ async function createContextMenus() {
     const currentDomain = await recieveData('currentDomain');
     const urlVariants = await recieveData('urlVariants');
     const prefix = await recieveData('prefix');
-    let titles = [];
 
     if (settings[0]) {
         urlVariants.forEach((url, index) => {
@@ -73,10 +70,9 @@ async function createContextMenus() {
                 id: `url-${index}`,
                 title: title,
                 contexts: ['all'],
-                parentId: 'VARIANTS',
-                "onclick": function(info, tab) {alert(1);},
+                parentId: 'VARIANTS'
             })
-            // titles.push(title)
+            chrome.contextMenus.update(`url-${index}`, { onclick: insertTitle(title) });
         });
     }
     const allEmailDomains = await recieveData('allEmailDomains');
@@ -100,10 +96,9 @@ async function createContextMenus() {
     // chrome.contextMenus.onClicked.addListener(await insertSubtitle(titles));
 }
 
-async function insertSubtitle(titles) {
+function insertTitle(title) {
     return async function (info) {
-        const id = parseInt(info.menuItemId.split('-')[1], 10);
-        await storeData({ 'currentText': titles[id] });
+        await storeData({ 'currentText': title });
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
             let tab = tabsArray[0];
             chrome.tabs.executeScript(tab.id, { file: './insert_text.js' });
