@@ -28,6 +28,8 @@ async function updateAllMenus() {
     }
     if (currentDomain && currentDomain !== '') {
         title = currentUrl + currentDomain;
+    } else {
+        title = currentUrl + '@example.com';
     }
     if (prefix && prefix !== '') {
         title = `${prefix}+${currentUrl}${currentDomain}`;
@@ -37,7 +39,7 @@ async function updateAllMenus() {
         title: title,
         contexts: ['all']
     })
-    chrome.contextMenus.update('CURRENT_URL', { onclick: insertTitle(title) });
+    chrome.contextMenus.update('CURRENT_URL', { onclick: insertText(title) });
     await createContextMenus();
 }
 
@@ -57,7 +59,7 @@ async function createContextMenus() {
     }
     chrome.contextMenus.create({
         id: 'VARIANTS',
-        title: 'Show variants',
+        title: 'variants',
         contexts: ['all']
     })
     const currentDomain = await recieveData('currentDomain');
@@ -78,7 +80,7 @@ async function createContextMenus() {
                 contexts: ['all'],
                 parentId: 'VARIANTS'
             });
-            chrome.contextMenus.update(`url-${index}`, { onclick: insertTitle(title) });
+            chrome.contextMenus.update(`url-${index}`, { onclick: insertText(title) });
         });
     }
     const allEmailDomains = await recieveData('allEmailDomains');
@@ -102,9 +104,9 @@ async function createContextMenus() {
     // chrome.contextMenus.onClicked.addListener(await insertSubtitle(titles));
 }
 
-function insertTitle(title) {
+function insertText(text) {
     return async function () {
-        await storeData({ 'currentText': title });
+        await storeData({ 'currentText': text });
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
             let tab = tabsArray[0];
             chrome.tabs.executeScript(tab.id, { file: './insert_text.js' });

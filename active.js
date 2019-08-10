@@ -1,7 +1,6 @@
 (async function() {
     const url = window.location.href;
     await setCurrentUrl(url);
-    await setCurrentDomain();
     listenToUpdates(url);
 })();
 
@@ -9,7 +8,6 @@ function listenToUpdates(url) {
     chrome.runtime.onMessage.addListener(async function(request) {
         if (request.updateData) {
             await setCurrentUrl(url);
-            await setCurrentDomain();
             chrome.runtime.sendMessage({createMenus: true});
         }
         if (request.createMenus) {
@@ -66,13 +64,6 @@ async function setCurrentUrl(url = '') {
         selectedUrlType = parseInt(selectedUrlType, 10);
     }
     await storeData({ 'currentUrl': urlVariants[selectedUrlType] });
-}
-
-async function setCurrentDomain() {
-    let currentDomain = await recieveData('currentDomain');
-    if (!currentDomain || currentDomain === '') {
-        await storeData({ 'currentDomain': '@example.com' });
-    }
 }
 
 function storeData(dataSet = {}, callback = () => {}) {
