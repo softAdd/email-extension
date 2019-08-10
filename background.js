@@ -19,21 +19,7 @@ async function setDefaults() {
 
 async function updateAllMenus() {
     await chrome.contextMenus.removeAll();
-    const currentUrl = await recieveData('currentUrl');
-    const currentDomain = await recieveData('currentDomain');
-    const prefix = await recieveData('prefix');
-    let title = 'username@domain.com';
-    if (currentUrl && currentUrl !== '') {
-        title = currentUrl;
-    }
-    if (currentDomain && currentDomain !== '') {
-        title = currentUrl + currentDomain;
-    } else {
-        title = currentUrl + '@example.com';
-    }
-    if (prefix && prefix !== '') {
-        title = `${prefix}+${currentUrl}${currentDomain}`;
-    }
+    const title = await createCurrentEmail();
     chrome.contextMenus.create({
         id: 'CURRENT_URL',
         title: title,
@@ -41,15 +27,6 @@ async function updateAllMenus() {
     })
     chrome.contextMenus.update('CURRENT_URL', { onclick: insertText(title) });
     await createContextMenus();
-}
-
-function callInsert(info) {
-    if (info.menuItemId === 'MAIN_ITEM') {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
-            let tab = tabsArray[0];
-            chrome.tabs.executeScript(tab.id, { file: './insert_text.js' });
-        });
-    }
 }
 
 async function createContextMenus() {
@@ -86,22 +63,19 @@ async function createContextMenus() {
     const allEmailDomains = await recieveData('allEmailDomains');
 
     if (settings[1]) {
-        //
+        allEmailDomains.forEach(async function(domain, index) {
+            let current = await createCurrentEmail();
+            current = current.split('@')[0];
+            const title = current + domain;
+            chrome.contextMenus.create({
+                id: `title-${index}`,
+                title: title,
+                contexts: ['all'],
+                parentId: 'VARIANTS'
+            });
+            chrome.contextMenus.update(`title-${index}`, { onclick: insertText(title) });
+        });
     }
-
-    // titles.forEach(title => {
-    //     async function insertMenuTitle() {
-    //         await storeData({ 'currentText': title });
-    //         chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
-    //             let tab = tabsArray[0];
-    //             chrome.tabs.executeScript(tab.id, { file: './insert_text.js' });
-    //         });
-    //     }
-
-    //     chrome.contextMenus.onClicked.removeListener(insertMenuTitle);
-    //     chrome.contextMenus.onClicked.addListener(insertMenuTitle);
-    // });
-    // chrome.contextMenus.onClicked.addListener(await insertSubtitle(titles));
 }
 
 function insertText(text) {
@@ -114,54 +88,24 @@ function insertText(text) {
     }
 }
 
-// let currentText = await recieveData('currentText');
-// const prefix = await recieveData('prefix');
-// const currentDomain = await recieveData('currentDomain');
-// const currentUrl = await recieveData('currentUrl');
-// if (userPrefix !== undefined && prefix !== '') {
-//     currentText = `${prefix}+${currentUrl}${currentDomain}`;
-//     await storeData({ 'currentText': currentText });
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+async function createCurrentEmail() {
+    const currentUrl = await recieveData('currentUrl');
+    const currentDomain = await recieveData('currentDomain');
+    const prefix = await recieveData('prefix');
+    let title = 'username@domain.com';
+    if (currentUrl && currentUrl !== '') {
+        title = currentUrl;
+    }
+    if (currentDomain && currentDomain !== '') {
+        title = currentUrl + currentDomain;
+    } else {
+        title = currentUrl + '@example.com';
+    }
+    if (prefix && prefix !== '') {
+        title = `${prefix}+${currentUrl}${currentDomain}`;
+    }
+    return title
+}
 
 function storeData(dataSet = {}, callback = () => { }) {
     return new Promise(resolve => {
