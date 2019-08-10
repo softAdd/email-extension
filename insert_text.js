@@ -2,9 +2,9 @@
     const settings = await recieveData('settings');
     const currentText = await recieveData('currentText');
     const activeElement = window.document.activeElement;
-    // if (activeElement.value.includes(currentText) || activeElement.innerHTML.includes(currentText)) {
-    //     return
-    // }
+    if (activeElement.type !== 'textarea' && activeElement.type !== 'text') {
+        return
+    }
     if (activeElement.value === undefined) {
         activeElement.innerHTML += currentText;
     } else {
