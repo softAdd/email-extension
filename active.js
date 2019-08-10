@@ -14,6 +14,7 @@
             currentUrl = await getCurrentUrl(url);
             currentDomain = await getCurrentDomain();
             await storeData({ 'currentText': currentUrl + currentDomain });
+            chrome.runtime.sendMessage({createMenus: true});
         }
     });
 

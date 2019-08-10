@@ -71,7 +71,7 @@ async function createContextMenus() {
                 title: title,
                 contexts: ['all'],
                 parentId: 'VARIANTS'
-            })
+            });
             chrome.contextMenus.update(`url-${index}`, { onclick: insertTitle(title) });
         });
     }
