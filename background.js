@@ -17,21 +17,27 @@ async function setDefaults() {
     });
 }
 
-async function removeAllMenus() {
-    await chrome.contextMenus.removeAll();
-}
-
 async function updateAllMenus() {
-    await removeAllMenus();
-    const currentText = await recieveData('currentText');
-
-    const mainContext = {
-        id: 'MAIN_ITEM',
-        title: currentText || 'username@domain.ru',
-        contexts: ['all']
+    await chrome.contextMenus.removeAll();
+    const currentUrl = await recieveData('currentUrl');
+    const currentDomain = await recieveData('currentDomain');
+    const prefix = await recieveData('prefix');
+    let title = 'username@domain.com';
+    if (currentUrl && currentUrl !== '') {
+        title = currentUrl;
     }
-    chrome.contextMenus.create(mainContext);
-    chrome.contextMenus.update('MAIN_ITEM', { onclick: callInsert });
+    if (currentDomain && currentDomain !== '') {
+        title = currentUrl + currentDomain;
+    }
+    if (prefix && prefix !== '') {
+        title = `${prefix}+${currentUrl}${currentDomain}`;
+    }
+    chrome.contextMenus.create({
+        id: 'CURRENT_URL',
+        title: title,
+        contexts: ['all']
+    })
+    chrome.contextMenus.update('CURRENT_URL', { onclick: insertTitle(title) });
     await createContextMenus();
 }
 
@@ -97,7 +103,7 @@ async function createContextMenus() {
 }
 
 function insertTitle(title) {
-    return async function (info) {
+    return async function () {
         await storeData({ 'currentText': title });
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
             let tab = tabsArray[0];

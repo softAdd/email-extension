@@ -1,30 +1,23 @@
 (async function() {
     const url = window.location.href;
+    await setCurrentUrl(url);
+    await setCurrentDomain();
+    listenToUpdates(url);
+})();
 
-    let currentUrl = await getCurrentUrl(url);
-    await storeData({ 'currentUrl': currentUrl });
-    let currentDomain = await getCurrentDomain();
-    if (currentDomain === undefined || currentDomain === '') {
-        currentDomain = '@example.com';
-    }
-    await storeData({ 'currentText': currentUrl + currentDomain });
-
+function listenToUpdates(url) {
     chrome.runtime.onMessage.addListener(async function(request) {
         if (request.updateData) {
-            currentUrl = await getCurrentUrl(url);
-            currentDomain = await getCurrentDomain();
-            await storeData({ 'currentText': currentUrl + currentDomain });
+            await setCurrentUrl(url);
+            await setCurrentDomain();
             chrome.runtime.sendMessage({createMenus: true});
         }
-    });
-
-    chrome.runtime.onMessage.addListener(async function(request) {
         if (request.createMenus) {
             chrome.runtime.sendMessage({createMenus: true})
         }
     });
     chrome.runtime.sendMessage({createMenus: true});
-})();
+}   
 
 function parseDomain(url) {
     let topLevelDomain = extractHostname(url, true);
@@ -63,22 +56,23 @@ function parseDomain(url) {
     return [subDomain, hostName, topLevelDomain];
 }
 
-async function getCurrentUrl(url = '') {
+async function setCurrentUrl(url = '') {
     const urlVariants = parseDomain(url);
     await storeData({ 'urlVariants': urlVariants });
     let selectedUrlType = await recieveData('selectedUrlType');
-    if (selectedUrlType === undefined) {
+    if (!selectedUrlType || selectedUrlType === '') {
         selectedUrlType = 0;
+    } else {
+        selectedUrlType = parseInt(selectedUrlType, 10);
     }
-    return urlVariants[selectedUrlType];
+    await storeData({ 'currentUrl': urlVariants[selectedUrlType] });
 }
 
-async function getCurrentDomain() {
+async function setCurrentDomain() {
     let currentDomain = await recieveData('currentDomain');
-    if (currentDomain === undefined) {
-        currentDomain = '@example.com';
+    if (!currentDomain || currentDomain === '') {
+        await storeData({ 'currentDomain': '@example.com' });
     }
-    return currentDomain;
 }
 
 function storeData(dataSet = {}, callback = () => {}) {
