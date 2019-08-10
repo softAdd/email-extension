@@ -38,12 +38,13 @@ async function createContextMenus() {
         id: 'VARIANTS',
         title: 'variants',
         contexts: ['all']
-    })
+    });
     const currentDomain = await recieveData('currentDomain');
     const urlVariants = await recieveData('urlVariants');
     const prefix = await recieveData('prefix');
 
     if (settings[0]) {
+        let titles = [];
         urlVariants.forEach((url, index) => {
             let title = '';
             if (prefix !== undefined && prefix !== '') {
@@ -51,6 +52,10 @@ async function createContextMenus() {
             } else {
                 title = url + currentDomain;
             }
+            if (titles.some(elem => elem === title)) {
+                return
+            }
+            titles.push(title);
             chrome.contextMenus.create({
                 id: `url-${index}`,
                 title: title,
