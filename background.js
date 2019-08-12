@@ -4,6 +4,7 @@ window.onload = async function () {
 
 async function setDefaults() {
     chrome.tabs.onActivated.addListener(async function () {
+        await chrome.contextMenus.removeAll();
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
             let tab = tabsArray[0];
             chrome.tabs.executeScript(tab.id, { file: './active.js' });
