@@ -45,6 +45,7 @@ async function createContextMenus() {
     const prefix = await recieveData('prefix');
 
     if (settings[0]) {
+        let titles = [];
         urlVariants.forEach((url, index) => {
             let title = '';
             if (prefix !== undefined && prefix !== '') {
@@ -55,6 +56,7 @@ async function createContextMenus() {
             if (titles.some(elem => elem === title)) {
                 return
             }
+            titles.push(title);
             chrome.contextMenus.create({
                 id: `url-${index}`,
                 title: title,
