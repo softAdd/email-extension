@@ -11,6 +11,7 @@
     } else {
         activeElement.value = insert(activeElement.value, selectionStart, currentText);
     }
+    dispatchInputChange(activeElement);
     if (!settings) {
         return
     }
@@ -21,10 +22,17 @@
             activeElement.value = currentText;
         }
     }
+    dispatchInputChange(activeElement);
 })();
 
 function insert(str, index, value) {
     return str.substr(0, index) + value + str.substr(index);
+}
+
+function dispatchInputChange(elem) {
+    elem.dispatchEvent(new Event('change', { bubbles: true }));
+    elem.dispatchEvent(new Event('blur', { bubbles: true }));
+    elem.dispatchEvent(new Event('focus', { bubbles: true }));
 }
 
 function recieveData(propName = '') {
