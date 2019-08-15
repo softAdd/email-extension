@@ -1,32 +1,40 @@
-window.onload = async function () {
-    await setDefaults();
+let tabUrl = '';
+
+if (tabUrl === undefined || tabUrl === '') {
+    tabUrl = 'username@domain.com';
 }
 
-async function setDefaults() {
-    chrome.tabs.onActivated.addListener(async function () {
-        await chrome.contextMenus.removeAll();
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabsArray) {
-            let tab = tabsArray[0];
-            chrome.tabs.executeScript(tab.id, { file: './active.js' });
-        });
+chrome.tabs.onActivated.addListener(async function () {
+    await chrome.contextMenus.removeAll();
+    chrome.tabs.query({ active: true, currentWindow: true }, async function (tabsArray) {
+        let tab = tabsArray[0];
+        tabUrl = tab.url;
+        await storeData({ 'tabUrl': tabUrl });
+        await updateAllMenus();
     });
+});
 
-    chrome.runtime.onMessage.addListener(async function (request) {
-        if (request.createMenus) {
+chrome.extension.onConnect.addListener(function(port) {
+    port.onMessage.addListener(async function(msg) {
+        if (msg.update) {
             await updateAllMenus();
         }
     });
-}
+});
 
 async function updateAllMenus() {
     await chrome.contextMenus.removeAll();
-    const title = await createCurrentEmail();
-    chrome.contextMenus.create({
+    let currentDomain = await recieveData('currentDomain');
+    if (!currentDomain || currentDomain === '') {
+        currentDomain = '@example.com';
+    }
+    const title = await createCurrentUrl(tabUrl) + currentDomain;
+    await chrome.contextMenus.create({
         id: 'CURRENT_URL',
         title: title,
         contexts: ['all']
     })
-    chrome.contextMenus.update('CURRENT_URL', { onclick: insertText(title) });
+    await chrome.contextMenus.update('CURRENT_URL', { onclick: insertText(title) });
     await createContextMenus();
 }
 
@@ -41,7 +49,7 @@ async function createContextMenus() {
         contexts: ['all']
     });
     const currentDomain = await recieveData('currentDomain');
-    const urlVariants = await recieveData('urlVariants');
+    const urlVariants = parseDomain(tabUrl);
     const prefix = await recieveData('prefix');
 
     if (settings[0]) {
@@ -94,23 +102,53 @@ function insertText(text) {
     }
 }
 
-async function createCurrentEmail() {
-    const currentUrl = await recieveData('currentUrl');
-    const currentDomain = await recieveData('currentDomain');
-    const prefix = await recieveData('prefix');
-    let title = 'username@domain.com';
-    if (currentUrl && currentUrl !== '') {
-        title = currentUrl;
-    }
-    if (currentDomain && currentDomain !== '') {
-        title = currentUrl + currentDomain;
+async function createCurrentUrl(url = '') {
+    const urlVariants = parseDomain(url);
+    let selectedUrlType = await recieveData('selectedUrlType');
+    if (!selectedUrlType || selectedUrlType === '') {
+        selectedUrlType = 0;
     } else {
-        title = currentUrl + '@example.com';
+        selectedUrlType = parseInt(selectedUrlType, 10);
     }
-    if (prefix && prefix !== '') {
-        title = `${prefix}+${currentUrl}${currentDomain}`;
+    await storeData({ 'tabUrl': urlVariants[selectedUrlType] });
+    return urlVariants[selectedUrlType];
+}
+
+function parseDomain(url) {
+    let topLevelDomain = extractHostname(url, true);
+    let subDomain = extractHostname(url);
+    let hostName = extractHostname(url, true, true);
+
+    function extractHostname(url, tld, only_name) {
+        let hostname;
+
+        //find & remove protocol (http, ftp, etc.) and get hostname
+        if (url.indexOf("://") > -1) {
+            hostname = url.split('/')[2];
+        } else {
+            hostname = url.split('/')[0];
+        }
+
+        //find & remove port number
+        hostname = hostname.split(':')[0];
+
+        //find & remove "?"
+        hostname = hostname.split('?')[0];
+
+        if (tld) {
+            let hostnames = hostname.split('.');
+            hostname = hostnames[hostnames.length - 2] + '.' + hostnames[hostnames.length - 1];
+        }
+
+        if (only_name) {
+            let domain = hostname.split('.')[0];
+            hostname = domain;
+        }
+
+        return hostname;
     }
-    return title
+
+    return [subDomain, hostName, topLevelDomain];
 }
 
 function storeData(dataSet = {}, callback = () => { }) {

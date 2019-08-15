@@ -1,4 +1,10 @@
-window.onload = async function() {
+const port = chrome.extension.connect({
+    name: "Update Menu Connection"
+});
+
+document.addEventListener("DOMContentLoaded", popupChanges);
+
+async function popupChanges() {
     const domainList = document.querySelector('.domain-list');
     const emailInput = document.querySelector('.input-email');
     const addEmailButton = document.querySelector('.button-add');
@@ -17,12 +23,12 @@ window.onload = async function() {
         emailInput.value = '';
         await storeData({ 'allEmailDomains': emails });
         if (emails.length === 1) {
-            await storeData({ 'currentDomain': emails[0].toString() }, updatePageData);
+            await storeData({ 'currentDomain': emails[0].toString() });
+            await port.postMessage({ update: true });
         }
         createDeleteListeners(emails);
         emailInput.focus();
-        updatePageData();
-        messageToUpdateMenus();
+        await port.postMessage({ update: true });
     })
 
     emailInput.addEventListener('keypress', function(e) {
@@ -31,7 +37,7 @@ window.onload = async function() {
         }
     })
     createDeleteListeners(emails);
-    updatePageData();
+    await port.postMessage({ update: true });
 }
 
 function storeData(dataSet = {}, callback = () => { }) {
@@ -51,20 +57,6 @@ function recieveData(propName = '') {
     });
 }
 
-function updatePageData() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        let tab = tabs[0];
-        chrome.tabs.sendMessage(tab.id, { updateData: true });
-    });
-}
-
-function messageToUpdateMenus() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        let tab = tabs[0];
-        chrome.tabs.sendMessage(tab.id, { createMenus: true });
-    });
-}
-
 function addEmails(domainList, emails) {
     emails.forEach((email, index) => {
         domainList.innerHTML += `<div class="email-item"><p class="email">${email}</p><span class="delete-item" id="delete-${index}">x</span></div>`;
@@ -80,14 +72,16 @@ function createDeleteListeners(emails) {
             await storeData({ 'allEmailDomains': emails });
             domainList.innerHTML = '';
             if (emails.length === 0) {
-                await storeData({ 'currentDomain': '@example.com' }, updatePageData);
+                await storeData({ 'currentDomain': '@example.com' });
+                await port.postMessage({ update: true });
             } else {
                 addEmails(domainList, emails);
             }
             if (emails.length === 1) {
-                await storeData({ 'currentDomain': emails[0].toString() }, updatePageData);
+                await storeData({ 'currentDomain': emails[0].toString() });
+                await port.postMessage({ update: true });
             }
-            messageToUpdateMenus();
+            await port.postMessage({ update: true });
             createDeleteListeners(emails);
         });
     });

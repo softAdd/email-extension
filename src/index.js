@@ -1,4 +1,8 @@
 window.onload = async function () {
+    const port = chrome.extension.connect({
+        name: "Update Menu Connection"
+    });
+    
     const inputs = document.querySelectorAll('input[name=input-center]');
     let checkedInput = await recieveData('selectedUrlType');
     if (checkedInput === undefined) {
@@ -12,8 +16,7 @@ window.onload = async function () {
         input.addEventListener('change', async function () {
             if (input.checked) {
                 await storeData({ 'selectedUrlType': index.toString() });
-                updatePageData();
-                messageToUpdateMenus();
+                await port.postMessage({ update: true });
             }
         });
     });
@@ -23,7 +26,7 @@ window.onload = async function () {
     if (emails === undefined || emails === '' || emails === []) {
         emails = ['@gmail.com', '@mail.ru'];
         await storeData({ 'allEmailDomains': emails });
-        updatePageData();
+        await port.postMessage({ update: true });
     }
     emails.forEach(email => {
         select.innerHTML += `<option value="${email}">${email}</option>`;
@@ -45,16 +48,14 @@ window.onload = async function () {
     select.addEventListener('change', async function() {
         await storeData({ 'selectedOptionNumber': select.selectedIndex.toString() });
         await storeData({ 'currentDomain': select.value.toString() });
-        updatePageData();
-        messageToUpdateMenus();
+        await port.postMessage({ update: true });
     })
 
     const optionsNode = document.querySelector('#options-button');
     optionsNode.addEventListener('click', function() {
         window.location.href = "domain_list/popup.html";
     })
-    updatePageData();
-    messageToUpdateMenus();
+    await port.postMessage({ update: true });
 }
 
 function storeData(dataSet = {}, callback = () => { }) {
@@ -71,19 +72,5 @@ function recieveData(propName = '') {
         chrome.storage.sync.get([propName], function (result) {
             resolve(result[propName]);
         });
-    });
-}
-
-function updatePageData() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        let tab = tabs[0];
-        chrome.tabs.sendMessage(tab.id, { updateData: true });
-    });
-}
-
-function messageToUpdateMenus() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        let tab = tabs[0];
-        chrome.tabs.sendMessage(tab.id, { createMenus: true });
     });
 }

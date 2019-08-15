@@ -26,16 +26,5 @@
         "<all_urls>",
         "http://*/*",
         "https://*/*"
-    ],
-    "content_scripts": [
-        {
-            "matches": [
-                "<all_urls>"
-            ],
-            "run_at": "document_idle",
-            "js": [
-                "active.js"
-            ]
-        }
     ]
 }

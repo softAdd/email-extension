@@ -1,6 +1,10 @@
 window.addEventListener('load', createSubmenu);
 
 async function createSubmenu() {
+    const port = chrome.extension.connect({
+        name: "Update Menu Connection"
+    });
+
     const settings = document.querySelectorAll('.menu-settings');
     let checked = await recieveData('settings');
     if (!Array.isArray(checked)) {
@@ -17,16 +21,9 @@ async function createSubmenu() {
             checked[index] = setting.checked;
             await storeData({ 'settings': checked });
             if (index === 0 || index === 1) {
-                messageToUpdateMenus();
+                await port.postMessage({ update: true });
             }
         });
-    });
-}
-
-function messageToUpdateMenus() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        let tab = tabs[0];
-        chrome.tabs.sendMessage(tab.id, { createMenus: true });
     });
 }
 
