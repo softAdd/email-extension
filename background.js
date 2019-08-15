@@ -28,7 +28,11 @@ async function updateAllMenus() {
     if (!currentDomain || currentDomain === '') {
         currentDomain = '@example.com';
     }
-    const title = await createCurrentUrl(tabUrl) + currentDomain;
+    const prefix = await recieveData('prefix');
+    let title = await createCurrentUrl(tabUrl) + currentDomain;
+    if (prefix && prefix !== '') {
+        title = `${prefix}+${await createCurrentUrl(tabUrl)}${currentDomain}`;
+    }
     await chrome.contextMenus.create({
         id: 'CURRENT_URL',
         title: title,
@@ -78,7 +82,12 @@ async function createContextMenus() {
 
     if (settings[1]) {
         allEmailDomains.forEach(async function(domain, index) {
-            const title = await createCurrentUrl(tabUrl) + domain;
+            let title = '';
+            if (prefix !== undefined && prefix !== '') {
+                title = `${prefix}+${await createCurrentUrl(tabUrl)}${domain}`;
+            } else {
+                title = await createCurrentUrl(tabUrl) + domain;
+            }
             if (titles.some(elem => elem === title)) {
                 return
             }
