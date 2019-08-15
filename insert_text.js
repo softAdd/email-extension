@@ -33,6 +33,7 @@ function dispatchInputChange(elem) {
     elem.dispatchEvent(new Event('change', { bubbles: true }));
     elem.dispatchEvent(new Event('blur', { bubbles: true }));
     elem.dispatchEvent(new Event('focus', { bubbles: true }));
+    elem.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 function recieveData(propName = '') {
