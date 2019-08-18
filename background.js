@@ -4,7 +4,11 @@ if (tabUrl === undefined || tabUrl === '') {
     tabUrl = 'username@domain.com';
 }
 
-chrome.tabs.onActivated.addListener(async function () {
+chrome.tabs.onActivated.addListener(updateUrl);
+chrome.tabs.onUpdated.addListener(updateUrl);
+chrome.tabs.onDetached.addListener(updateUrl);
+
+async function updateUrl() {
     await chrome.contextMenus.removeAll();
     chrome.tabs.query({ active: true, currentWindow: true }, async function (tabsArray) {
         let tab = tabsArray[0];
@@ -12,7 +16,7 @@ chrome.tabs.onActivated.addListener(async function () {
         await storeData({ 'tabUrl': tabUrl });
         await updateAllMenus();
     });
-});
+}
 
 chrome.extension.onConnect.addListener(function(port) {
     port.onMessage.addListener(async function(msg) {
