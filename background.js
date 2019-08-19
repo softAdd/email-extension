@@ -6,7 +6,7 @@ if (tabUrl === undefined || tabUrl === '') {
 
 chrome.tabs.onActivated.addListener(updateUrl);
 chrome.tabs.onUpdated.addListener(updateUrl);
-chrome.tabs.onDetached.addListener(updateUrl);
+chrome.tabs.onAttached.addListener(updateUrl);
 
 async function updateUrl() {
     await chrome.contextMenus.removeAll();
@@ -33,7 +33,11 @@ async function updateAllMenus() {
         currentDomain = '@example.com';
     }
     const prefix = await recieveData('prefix');
-    let title = await createCurrentUrl(tabUrl) + currentDomain;
+    let url = await createCurrentUrl(tabUrl);
+    if (url.includes('undefined')) {
+        url = parseDomain(tabUrl)[0];
+    }
+    const title = url + currentDomain;
     if (prefix && prefix !== '') {
         title = `${prefix}+${await createCurrentUrl(tabUrl)}${currentDomain}`;
     }
