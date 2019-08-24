@@ -37,7 +37,7 @@ async function updateAllMenus() {
     if (url.includes('undefined')) {
         url = parseDomain(tabUrl)[0];
     }
-    const title = url + currentDomain;
+    let title = url + currentDomain;
     if (prefix && prefix !== '') {
         title = `${prefix}+${await createCurrentUrl(tabUrl)}${currentDomain}`;
     }
